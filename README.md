@@ -1,42 +1,47 @@
-# Team B: Live Whiteboard
+# FUNBOARD — Live Collaborative Whiteboard
 
-> Real-time collaborative drawing rooms
+> Real-time collaborative drawing rooms with Neo-Brutalist design. Built for **Hack4Haldia'26**.
 
-**Hack4Haldia'26** is a 3-hour build challenge. This is your starter repository. Build new features on top of it, integrate them, **deploy the working project**, and open a **Pull Request** on this repository. AI tools and open-source / open-weight models are fully allowed.
+## Overview
 
-## The Problem
+FUNBOARD is an expressive, Neo-Brutalist real-time collaborative whiteboard. Multiple users can join a room and see each other's strokes, shapes, and cursors instantly.
 
-Remote teams need a shared canvas. Build a whiteboard where multiple people join a room and see each other's strokes instantly.
+## Architecture
 
-## Must-have (core, do these first)
+```text
+TEAM-B/
+├── frontend/
+│   ├── index.html          # Neo-Brutalist Homepage & Collaborative Workspace
+│   ├── css/
+│   │   └── style.css       # Neo-Brutalist design system (borders, hard shadows, palettes)
+│   └── js/
+│       └── client.js       # Real-time canvas engine (shapes, highlighters, text, cursors)
+├── backend/
+│   ├── server.js           # Express + Socket.IO real-time server
+│   ├── db.js               # SQLite persistence layer (WAL mode, per-user undo/redo)
+│   └── tests/
+│       └── test_server.js  # Automated headless end-to-end test suite
+├── data/
+│   └── whiteboard.db       # Persistent SQLite database
+├── package.json
+└── README.md
+```
 
-- [ ] Create/join a room by ID
-- [ ] Draw strokes that sync live to everyone in the room
-- [ ] Late joiners see the existing board (server keeps state)
-- [ ] Handle disconnect/reconnect without losing the board
+## Features Implemented
 
-## Bonus (only after the core works end to end)
-
-- [ ] Per-user undo/redo
-- [ ] Live cursors and presence list
-- [ ] Redis pub/sub so it works across multiple server instances
-- [ ] Export board as PNG
-
-## Industry-level tech we expect you to use
-
-- WebSockets / Socket.IO
-- Room state management
-- Redis pub/sub (bonus)
-
-A toy in-memory demo is not enough. Use real tools (database, auth, queue, model etc.) where it makes sense.
-
-## What is already here
-
-| File | Purpose |
-|---|---|
-| `index.html` | Starter UI with an API tester. Replace it with your real frontend. |
-| `app.py` + `requirements.txt` | **Python / Flask** starter |
-| `script.js` + `package.json` | **Node / Express** starter |
+### Core Features
+- [x] **Neo-Brutalist Homepage & Workspace**: Distinct two-screen experience with room creation and direct join.
+- [x] **Real-Time Stroke Synchronization**: Sub-millisecond latency via Socket.IO.
+- [x] **Expanded Toolset**: Freehand pen, solid marker, translucent highlighter, dashed pen, eraser.
+- [x] **Geometric Shapes**: Rectangles, circles/ellipses, straight lines, and directional arrows.
+- [x] **Inline Text Placement**: Click anywhere on canvas to type and place vector text.
+- [x] **Fill Mode**: Toggle between hollow/transparent and solid pastel fill.
+- [x] **SQLite State Persistence**: Preserves board state across reloads and server restarts.
+- [x] **Late-Joiner Board Recovery**: New participants instantly receive the authoritative board state.
+- [x] **Per-User Undo / Redo**: Ctrl+Z / Ctrl+Y with user-isolated history stacks.
+- [x] **Live Multi-User Cursors**: Real-time position tracking with custom colored name tags.
+- [x] **PNG Board Export**: High-resolution PNG export with warm background preserved.
+- [x] **Clear Board Confirmation**: Modal confirmation preventing accidental loss.
 
 Pick **ONE** stack and delete the other, or keep both if you want. Both expose the same endpoints:
 

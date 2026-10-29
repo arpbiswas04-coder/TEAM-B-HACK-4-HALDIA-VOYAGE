@@ -1,56 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Team B: Live Whiteboard</title>
-<style>
-  body{font-family:system-ui,sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:2rem;max-width:860px;margin-inline:auto}
-  h1{margin:0 0 .25rem} p.tag{color:#94a3b8;margin-top:0}
-  .card{background:#1e293b;border-radius:10px;padding:1rem;margin:1rem 0}
-  button{background:#38bdf8;border:0;border-radius:6px;padding:.4rem .8rem;cursor:pointer;font-weight:600}
-  code{background:#0f172a;padding:2px 6px;border-radius:4px}
-  textarea,pre{width:100%;box-sizing:border-box;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:6px;padding:.5rem}
-  pre{white-space:pre-wrap;min-height:3rem}
-  .row{display:flex;gap:.5rem;align-items:center;margin:.4rem 0;flex-wrap:wrap}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Team B — Live Collaborative Whiteboard</title>
+  <meta name="description" content="Real-time multi-user collaborative whiteboard with instant stroke synchronization, SQLite persistence, presence tracking, and high-DPI canvas.">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<h1>Team B: Live Whiteboard</h1>
-<p class="tag">Real-time collaborative drawing rooms</p>
+  <div id="app">
+    <!-- Compact Top Navigation Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">B</div>
+        <span class="brand-title">Team B</span>
+        <span class="brand-subtitle">Live Whiteboard</span>
+      </div>
 
-<div class="card">
-  <b>Starter API tester.</b> Replace this page with your real UI.
-  <div class="row"><button onclick="call('GET','/health')">GET /health</button></div>
-  <div id="eps"></div>
-  <label>JSON body (for POST/PATCH)</label>
-  <textarea id="body" rows="4">{}</textarea>
-  <label>Response</label>
-  <pre id="out">...</pre>
-</div>
+      <div class="room-header-info" id="roomHeaderInfo">
+        <div class="room-badge">
+          <span>Room:</span>
+          <span class="room-id-text" id="activeRoomLabel">...</span>
+          <button class="btn-icon-xs" id="btnCopyRoomId" title="Copy Room ID">
+            📋 Copy ID
+          </button>
+          <button class="btn-icon-xs" id="btnCopyRoomLink" title="Copy Share Link">
+            🔗 Share Link
+          </button>
+        </div>
+      </div>
 
-<div class="card"><!-- TODO: build your frontend here --></div>
+      <div class="header-actions">
+        <div class="status-indicator" id="connectionStatus" title="Socket.IO connection status">
+          <span class="status-dot connecting" id="statusDot"></span>
+          <span id="statusText">Connecting...</span>
+        </div>
 
-<script>
-const ENDPOINTS = [{"m": "POST", "p": "/api/rooms", "d": "Create a room -> {roomId}"}, {"m": "GET", "p": "/api/rooms/:id", "d": "Get the current board state"}];
-const eps = document.getElementById("eps");
-ENDPOINTS.forEach(e => {
-  const row = document.createElement("div"); row.className = "row";
-  const b = document.createElement("button"); b.textContent = e.m + " " + e.p;
-  b.onclick = () => call(e.m, e.p);
-  row.append(b, Object.assign(document.createElement("span"), {textContent: e.d}));
-  eps.append(row);
-});
-async function call(method, path) {
-  const url = path.replace(/:\w+/g, "1");
-  const opts = {method, headers: {"Content-Type": "application/json"}};
-  if (method !== "GET") opts.body = document.getElementById("body").value;
-  try {
-    const r = await fetch(url, opts);
-    const txt = await r.text();
-    document.getElementById("out").textContent = r.status + "\n" + txt;
-  } catch (err) { document.getElementById("out").textContent = String(err); }
-}
-</script>
+        <button class="presence-btn" id="btnPresenceToggle" title="View participants in this room">
+          <span>👥</span>
+          <span id="participantCount">1 online</span>
+        </button>
+
+        <button class="btn btn-secondary" id="btnOpenJoinModal" title="Switch or join another room">
+          Join Room
+        </button>
+        <button class="btn btn-primary" id="btnOpenCreateModal" title="Create a new room">
+          + New Room
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace with Layered Canvases -->
+    <main class="workspace" id="workspace">
+      <!-- Authoritative committed strokes canvas -->
+      <canvas id="mainCanvas" class="canvas-layer"></canvas>
+      <!-- Ephemeral live drawing preview canvas (in-progress local & remote strokes) -->
+      <canvas id="previewCanvas" class="canvas-layer"></canvas>
+      <!-- Remote cursors overlay -->
+      <div id="cursorOverlay"></div>
+
+      <!-- Floating Bottom Toolbar -->
+      <div class="floating-toolbar" id="toolbar" role="toolbar" aria-label="Drawing Tools">
+        <!-- Drawing Tools -->
+        <div class="tool-group">
+          <button class="tool-btn active" id="toolPen" title="Pen Tool (P)" data-tool="pen">
+            ✏️
+          </button>
+          <button class="tool-btn" id="toolEraser" title="Eraser Tool (E)" data-tool="eraser">
+            🧹
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Color Palette -->
+        <div class="color-picker-container" id="paletteContainer">
+          <button class="color-swatch active" data-color="#f8fafc" style="background-color: #f8fafc;" title="White"></button>
+          <button class="color-swatch" data-color="#38bdf8" style="background-color: #38bdf8;" title="Sky Blue"></button>
+          <button class="color-swatch" data-color="#10b981" style="background-color: #10b981;" title="Emerald"></button>
+          <button class="color-swatch" data-color="#f59e0b" style="background-color: #f59e0b;" title="Amber"></button>
+          <button class="color-swatch" data-color="#f43f5e" style="background-color: #f43f5e;" title="Coral Red"></button>
+          <button class="color-swatch" data-color="#a855f7" style="background-color: #a855f7;" title="Purple"></button>
+          <label class="custom-color-btn" title="Custom Color Picker">
+            <input type="color" id="customColorInput" value="#f8fafc">
+            🎨
+          </label>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Brush Sizes -->
+        <div class="brush-sizes" id="brushSizesContainer">
+          <button class="size-btn" data-size="2" title="Fine (2px)">
+            <span class="size-dot" style="width: 4px; height: 4px;"></span>
+          </button>
+          <button class="size-btn active" data-size="5" title="Medium (5px)">
+            <span class="size-dot" style="width: 8px; height: 8px;"></span>
+          </button>
+          <button class="size-btn" data-size="12" title="Thick (12px)">
+            <span class="size-dot" style="width: 14px; height: 14px;"></span>
+          </button>
+          <button class="size-btn" data-size="24" title="Marker (24px)">
+            <span class="size-dot" style="width: 20px; height: 20px;"></span>
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- History Actions -->
+        <div class="tool-group">
+          <button class="tool-btn" id="btnUndo" title="Undo (Ctrl+Z)">
+            ↩️
+          </button>
+          <button class="tool-btn" id="btnRedo" title="Redo (Ctrl+Y)">
+            ↪️
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Actions -->
+        <div class="tool-group">
+          <button class="tool-btn" id="btnExport" title="Export board as PNG">
+            📥
+          </button>
+          <button class="tool-btn" id="btnClearBoard" title="Clear whiteboard (confirmation required)" style="color: var(--danger);">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Presence Popover Drawer -->
+    <div class="presence-popover" id="presencePopover">
+      <div class="popover-title">Room Participants</div>
+      <div id="participantsList">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+    <!-- Create Room Modal -->
+    <div class="modal-overlay" id="modalCreateRoom">
+      <div class="modal-box">
+        <h3 class="modal-title">Create Collaborative Room</h3>
+        <p class="modal-desc">Create a new live room. A unique room ID will be generated, or you can specify a custom one.</p>
+        <div class="form-group">
+          <label class="form-label" for="createRoomName">Whiteboard Name</label>
+          <input type="text" id="createRoomName" class="form-input" placeholder="e.g. Brainstorming Session" maxlength="60">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="createCustomId">Custom Room ID (Optional)</label>
+          <input type="text" id="createCustomId" class="form-input" placeholder="e.g. my-team-room" maxlength="32">
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="btnCancelCreate">Cancel</button>
+          <button class="btn btn-primary" id="btnConfirmCreate">Create Room</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Join Room Modal -->
+    <div class="modal-overlay" id="modalJoinRoom">
+      <div class="modal-box">
+        <h3 class="modal-title">Join Existing Room</h3>
+        <p class="modal-desc">Enter the room ID to join your team's live whiteboard.</p>
+        <div class="form-group">
+          <label class="form-label" for="joinRoomInput">Room ID</label>
+          <input type="text" id="joinRoomInput" class="form-input" placeholder="e.g. room-7f2a8c" autocomplete="off">
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="btnCancelJoin">Cancel</button>
+          <button class="btn btn-primary" id="btnConfirmJoin">Join Room</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clear Board Confirmation Modal -->
+    <div class="modal-overlay" id="modalClearBoard">
+      <div class="modal-box">
+        <h3 class="modal-title" style="color: var(--danger);">Clear Entire Board?</h3>
+        <p class="modal-desc">This action will erase all drawings on this whiteboard for everyone in the room. This change is saved on the server.</p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="btnCancelClear">Cancel</button>
+          <button class="btn btn-danger" id="btnConfirmClear">Yes, Clear Board</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+  </div>
+
+  <!-- Socket.IO client served directly by server -->
+  <script src="/socket.io/socket.io.js"></script>
+  <!-- Main Client Application -->
+  <script src="/client.js"></script>
 </body>
 </html>

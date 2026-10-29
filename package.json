@@ -2,15 +2,20 @@
   "name": "team-b",
   "version": "1.0.0",
   "private": true,
-  "main": "script.js",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node script.js"
+    "start": "node backend/server.js",
+    "test": "node backend/tests/test_server.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
+    "better-sqlite3": "^13.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "socket.io": "latest",
-    "ioredis": "latest"
+    "express": "^4.22.3",
+    "ioredis": "latest",
+    "socket.io": "^4.8.4"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.4"
   }
 }
