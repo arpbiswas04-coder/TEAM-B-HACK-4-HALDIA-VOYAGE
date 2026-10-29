@@ -21,6 +21,10 @@ if (fs.existsSync(rootDbPath) && !fs.existsSync(targetDbPath)) {
 }
 
 const DB_PATH = process.env.DB_PATH || targetDbPath;
+const dbDir = path.dirname(DB_PATH);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
 
 // Initialize database
 const db = new Database(DB_PATH);

@@ -485,68 +485,245 @@ html, body {
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
+  gap: 12px;
   z-index: 40;
   flex-shrink: 0;
+  user-select: none;
 }
 
+/* Header Left: Navigation, Brand & Room Cluster */
 .wb-header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  min-width: 0;
 }
 
-.btn-back-home {
-  font-weight: 800;
-  font-size: 13px;
-  padding: 6px 12px;
-}
-
-.wb-brand {
-  display: flex;
+/* Compact Arrow-only back button */
+.wb-back-btn {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-weight: 900;
-  font-size: 16px;
-  text-transform: uppercase;
-}
-
-.wb-room-pill {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  justify-content: center;
   background-color: #FFFFFF;
   border: var(--border-thick);
   border-radius: var(--radius-box);
   box-shadow: var(--shadow-hard-sm);
-  padding: 4px 10px;
-  font-size: 13px;
-  font-weight: 700;
+  color: var(--ink-black);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+}
+
+.wb-back-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--ink-black);
+  background-color: var(--bright-yellow);
+}
+
+.wb-back-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--ink-black);
+}
+
+.wb-back-btn:focus-visible {
+  outline: 2px solid var(--cobalt-blue);
+  outline-offset: 2px;
+}
+
+.wb-back-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Brand Grouping */
+.wb-brand-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.wb-brand-icon {
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+}
+
+.wb-brand-name {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* Room Cluster: Pill + Mini Action Buttons */
+.wb-room-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.wb-room-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #FFFFFF;
+  border: var(--border-thick);
+  border-radius: var(--radius-box);
+  box-shadow: var(--shadow-hard-sm);
+  padding: 0 10px;
+  height: 34px;
+  min-width: 0;
+}
+
+.wb-room-tag {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  background: #F3F0E6;
+  padding: 2px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--ink-black);
 }
 
 .room-id-mono {
   font-family: var(--font-mono);
-  color: var(--cobalt-blue);
   font-weight: 800;
+  font-size: 13px;
+  color: var(--cobalt-blue);
+  max-width: 130px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
+.wb-room-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.wb-mini-btn {
+  height: 32px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  background-color: #FFFFFF;
+  border: 2px solid var(--ink-black);
+  border-radius: 6px;
+  box-shadow: 2px 2px 0px var(--ink-black);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  color: var(--ink-black);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+  user-select: none;
+}
+
+.wb-mini-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--ink-black);
+}
+
+.wb-mini-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--ink-black);
+}
+
+.wb-mini-btn:focus-visible {
+  outline: 2px solid var(--cobalt-blue);
+  outline-offset: 2px;
+}
+
+.wb-mini-btn-accent {
+  background-color: var(--bright-yellow);
+}
+
+/* Header Right: Unified Desktop Action Toolbar */
 .wb-header-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
-/* Status Dot in Header */
+.wb-header-divider {
+  width: 2px;
+  height: 24px;
+  background-color: var(--ink-black);
+  margin: 0 3px;
+}
+
+/* Unified Button Style for Header Actions */
+.wb-header-btn {
+  height: 34px;
+  padding: 0 12px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 800;
+  border: var(--border-thick);
+  border-radius: var(--radius-box);
+  box-shadow: var(--shadow-hard-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+  user-select: none;
+}
+
+.wb-header-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--ink-black);
+}
+
+.wb-header-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--ink-black);
+}
+
+.wb-header-btn:focus-visible {
+  outline: 2px solid var(--cobalt-blue);
+  outline-offset: 2px;
+}
+
+.wb-btn-mint {
+  background-color: var(--mint-green);
+  color: var(--ink-black);
+}
+
+.wb-btn-white {
+  background-color: #FFFFFF;
+  color: var(--ink-black);
+}
+
+.wb-btn-coral {
+  background-color: var(--coral-red);
+  color: #FFFFFF;
+}
+
+/* Status Badge in Header */
 .wb-status-badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 12px;
   font-weight: 800;
-  padding: 4px 10px;
-  border: var(--border-subtle);
-  border-radius: var(--radius-pill);
+  padding: 0 10px;
+  height: 34px;
+  border: var(--border-thick);
+  border-radius: var(--radius-box);
   box-shadow: var(--shadow-hard-sm);
   background-color: #FFFFFF;
+  color: var(--ink-black);
 }
 
 .wb-status-dot {
@@ -554,6 +731,7 @@ html, body {
   height: 8px;
   border-radius: 50%;
   border: 1.5px solid var(--ink-black);
+  flex-shrink: 0;
 }
 
 .wb-status-dot.online {
@@ -1005,6 +1183,12 @@ html, body {
 .toast-info { background-color: var(--bright-yellow); }
 
 /* Responsive Adjustments */
+@media (max-width: 1100px) {
+  .wb-brand-name {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
   .hero-section {
     grid-template-columns: 1fr;
@@ -1023,5 +1207,60 @@ html, body {
   }
   .hero-title {
     font-size: 38px;
+  }
+  .room-id-mono {
+    max-width: 90px;
+  }
+}
+
+@media (max-width: 768px) {
+  .wb-header {
+    min-height: 52px;
+    padding: 4px 10px;
+    gap: 8px;
+  }
+  .wb-mini-btn .btn-label {
+    display: none;
+  }
+  .wb-mini-btn {
+    padding: 0 7px;
+  }
+  .wb-status-text {
+    display: none;
+  }
+  .wb-status-badge {
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 580px) {
+  .wb-header {
+    height: auto;
+    padding: 6px 8px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .wb-header-left,
+  .wb-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .wb-header-divider {
+    display: none;
+  }
+  .wb-room-pill {
+    padding: 0 6px;
+  }
+  .wb-btn-export .btn-label,
+  .wb-btn-clear .btn-label {
+    display: none;
+  }
+  .wb-header-btn {
+    padding: 0 8px;
+  }
+  .toast-shelf {
+    right: 12px;
+    left: 12px;
+    bottom: 74px;
   }
 }

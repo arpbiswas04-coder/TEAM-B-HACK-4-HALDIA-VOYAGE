@@ -97,16 +97,23 @@ async function runAllChecks() {
       setTimeout(() => reject(new Error("Client connection timeout")), 4000);
     });
 
-    // Client A & B join test room
+    // Client A joins test room and waits for room-init confirmation
+    const aInitPromise = new Promise((resolve, reject) => {
+      clientA.once("room-init", resolve);
+      setTimeout(() => reject(new Error("Timeout waiting for clientA room-init")), 4000);
+    });
     clientA.emit("join-room", {
       roomId: testRoomId,
       userId: "user-alpha",
       userName: "Alice",
       userColor: "#4568F5",
     });
+    await aInitPromise;
 
-    const bJoinPromise = new Promise((resolve) => {
-      clientA.on("user-joined", resolve);
+    // Client B joins test room; Client A should receive user-joined notification
+    const bJoinPromise = new Promise((resolve, reject) => {
+      clientA.once("user-joined", resolve);
+      setTimeout(() => reject(new Error("Timeout waiting for user-joined broadcast")), 4000);
     });
 
     clientB.emit("join-room", {

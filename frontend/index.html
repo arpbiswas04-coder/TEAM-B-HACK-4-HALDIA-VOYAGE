@@ -151,49 +151,68 @@
   <div id="whiteboardView" style="display: none;">
     <!-- Compact Neo-Brutalist Top Bar -->
     <header class="wb-header">
+      <!-- Left Section: Navigation, Branding, Room Cluster -->
       <div class="wb-header-left">
-        <button id="btnLeaveToHome" class="btn-brutal btn-sm btn-back-home" title="Return to Homepage">
-          ← Home
+        <!-- Arrow-only back button with clear tooltip & accessible label -->
+        <button id="btnLeaveToHome" class="wb-back-btn" title="Back to home" aria-label="Back to home">
+          <svg class="wb-back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
         </button>
 
-        <div class="wb-brand">
-          <div class="brand-icon-box" style="width: 28px; height: 28px; font-size: 14px;">✏️</div>
-          <span>FUNBOARD</span>
+        <!-- Product Branding -->
+        <div class="wb-brand-box">
+          <div class="brand-icon-box wb-brand-icon">✏️</div>
+          <span class="wb-brand-name">FUNBOARD</span>
         </div>
 
-        <div class="wb-room-pill">
-          <span>Room:</span>
-          <span id="wbRoomId" class="room-id-mono">...</span>
-          <button id="btnCopyRoomId" class="btn-brutal btn-sm" style="padding: 3px 8px; font-size: 11px;" title="Copy Room ID">
-            📋 Copy ID
-          </button>
-          <button id="btnCopyRoomLink" class="btn-brutal btn-sm btn-yellow" style="padding: 3px 8px; font-size: 11px;" title="Copy Share Link">
-            🔗 Share Link
-          </button>
+        <!-- Room Metadata & Sharing Controls -->
+        <div class="wb-room-cluster">
+          <div class="wb-room-pill" title="Current room">
+            <span class="wb-room-tag">ROOM</span>
+            <span id="wbRoomId" class="room-id-mono" title="Room ID">...</span>
+          </div>
+
+          <div class="wb-room-btn-group">
+            <button id="btnCopyRoomId" class="wb-mini-btn" title="Copy Room ID" aria-label="Copy Room ID">
+              <span class="btn-icon">📋</span>
+              <span class="btn-label">Copy ID</span>
+            </button>
+            <button id="btnCopyRoomLink" class="wb-mini-btn wb-mini-btn-accent" title="Copy Shareable Link" aria-label="Copy Shareable Link">
+              <span class="btn-icon">🔗</span>
+              <span class="btn-label">Share Link</span>
+            </button>
+          </div>
         </div>
       </div>
 
+      <!-- Right Section: Consolidated Action Toolbar -->
       <div class="wb-header-right">
-        <!-- Live Connection Status -->
-        <div class="wb-status-badge">
+        <!-- Live Connection Status Badge -->
+        <div class="wb-status-badge" id="wbStatusBadge" title="Socket.IO connection status">
           <span id="wbStatusDot" class="wb-status-dot connecting"></span>
-          <span id="wbStatusText">Connecting...</span>
+          <span id="wbStatusText" class="wb-status-text">Connecting...</span>
         </div>
 
-        <!-- Participants Count Button -->
-        <button id="btnPresenceToggle" class="btn-brutal btn-sm btn-mint" title="View participants in this room">
-          <span>👥</span>
-          <span id="participantCount">1 online</span>
+        <!-- Collaborators Toggle Button -->
+        <button id="btnPresenceToggle" class="wb-header-btn wb-btn-mint" title="View room participants" aria-label="View room participants">
+          <span class="btn-icon">👥</span>
+          <span id="participantCount" class="btn-label">1 online</span>
         </button>
 
+        <div class="wb-header-divider"></div>
+
         <!-- Export PNG -->
-        <button id="btnExportPng" class="btn-brutal btn-sm" title="Download whiteboard as PNG">
-          📥 Export PNG
+        <button id="btnExportPng" class="wb-header-btn wb-btn-white" title="Download whiteboard as PNG image" aria-label="Download whiteboard as PNG">
+          <span class="btn-icon">📥</span>
+          <span class="btn-label">Export PNG</span>
         </button>
 
         <!-- Clear Board -->
-        <button id="btnClearBoard" class="btn-brutal btn-sm btn-coral" title="Clear entire whiteboard">
-          🗑️ Clear
+        <button id="btnClearBoard" class="wb-header-btn wb-btn-coral" title="Clear entire whiteboard" aria-label="Clear entire whiteboard">
+          <span class="btn-icon">🗑️</span>
+          <span class="btn-label">Clear</span>
         </button>
       </div>
     </header>

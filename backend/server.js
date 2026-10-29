@@ -394,10 +394,20 @@ io.on("connection", (socket) => {
   });
 });
 
+// SPA Fallback for client-side routing
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api/") || req.path.includes(".")) {
+    return next();
+  }
+  res.sendFile(path.join(frontendPath, "index.html"));
+});
+
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || "0.0.0.0";
+
 if (require.main === module) {
-  server.listen(PORT, () => {
-    console.log(`FUNBOARD server running on http://localhost:${PORT}`);
+  server.listen(PORT, HOST, () => {
+    console.log(`FUNBOARD server running on http://${HOST}:${PORT}`);
   });
 }
 

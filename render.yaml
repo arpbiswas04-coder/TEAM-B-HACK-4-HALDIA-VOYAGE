@@ -1,0 +1,27 @@
+# Render Blueprint specification for FUNBOARD Live Whiteboard
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: funboard
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+
+    # Optional: For durable SQLite persistence across Render redeploys and restarts,
+    # attach a Render Persistent Disk (requires paid plan on Render):
+    # disk:
+    #   name: funboard-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
+    # envVars:
+    #   - key: DB_PATH
+    #     value: /var/data/whiteboard.db

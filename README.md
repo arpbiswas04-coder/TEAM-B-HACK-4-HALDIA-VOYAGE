@@ -43,56 +43,144 @@ TEAM-B/
 - [x] **PNG Board Export**: High-resolution PNG export with warm background preserved.
 - [x] **Clear Board Confirmation**: Modal confirmation preventing accidental loss.
 
-Pick **ONE** stack and delete the other, or keep both if you want. Both expose the same endpoints:
+## REST API Reference
 
-| Method | Path | What it should do |
-|---|---|---|
-| `GET` | `/health` | Already working |
-| `POST` | `/api/rooms` | Create a room -> {roomId} |
-| `GET` | `/api/rooms/:id` | Get the current board state |
+| Method | Path | Description | Response Status |
+|---|---|---|---|
+| `GET` | `/health` | Server health check with uptime & SQLite database status | `200 OK` |
+| `POST` | `/api/rooms` | Create a new room with optional `customId` and `name` | `201 Created` / `400` / `409` |
+| `GET` | `/api/rooms/:id` | Fetch authoritative room state and active stroke records | `200 OK` / `404 Not Found` |
+| `POST` | `/api/rooms/:id/clear` | Clear all strokes for a room and broadcast `board-cleared` | `200 OK` / `404 Not Found` |
 
-All the endpoints above return `501 Not Implemented` until you build them. Add more endpoints if you need.
-
-## Run locally
-
-**Python**
-```bash
-pip install -r requirements.txt
-python app.py        # http://localhost:5000
+### Health Check Response Example (`GET /health`)
+```json
+{
+  "status": "ok",
+  "project": "FUNBOARD: Collaborative Whiteboard",
+  "stack": "node",
+  "uptime": 3622,
+  "database": "connected",
+  "timestamp": 1793265203205
+}
 ```
 
-**Node**
+---
+
+## Local Development & Testing
+
+### 1. Prerequisites
+- Node.js v18+ (tested on Node v20 LTS)
+- npm v9+
+
+### 2. Installation
 ```bash
 npm install
-npm start            # http://localhost:3000
 ```
 
-Put secrets in a `.env` file. **Never commit API keys.**
+### 3. Start Development Server
+```bash
+npm start
+```
+The server will start on `http://localhost:3000`.
 
-## Deploy (required)
+### 4. Automated Headless Test Suite
+Run the comprehensive 14-point headless verification suite (validates health, room isolation, multi-tool sync, late-join recovery, undo/redo, clear board, presence cleanup, and DB persistence):
+```bash
+npm test
+```
 
-Your project must be live on a public URL. Easiest options:
-- **Render**: Web Service, connect the repo. Python start command: `gunicorn app:app`. Node: `npm start`.
-- Vercel / Railway / Fly.io also fine.
+---
 
-Add the live URL at the top of your PR description.
+## Production Deployment on Render
 
-## Submit
+FUNBOARD is engineered as a unified single-service architecture: the Express server serves the responsive Neo-Brutalist frontend, hosts the REST APIs, powers real-time WebSockets via Socket.IO on the same origin, and maintains room persistence via SQLite.
 
-1. Create a branch: `git checkout -b team-b-solution`
-2. Commit and push your work.
-3. Open a **Pull Request** against `main` of **this** repository.
-4. PR description must include: live URL, what you built, tech used, team members.
-5. Also submit on the official **MLH platform (OrganizerHQ)**. Instructions will be given at the start of the event.
+### Render Service Specifications
 
-## Rules
+| Setting | Value |
+|---|---|
+| **Service Type** | Web Service |
+| **Runtime** | `Node` |
+| **Branch** | `team-b-solution` |
+| **Build Command** | `npm install` |
+| **Start Command** | `npm start` |
+| **Health Check Path** | `/health` |
+| **Auto-Deploy** | Yes |
 
-- Teams of 3 to 4. Every member must be present.
-- 3 hours total. Commit often.
-- AI tools are open. You must still understand and be able to explain your code.
+### Environment Variables
 
-## Judging
+Configure these in the Render Dashboard (**Environment** tab) or via Blueprint:
 
-Working demo (35%) | Technical depth (25%) | Completeness of core features (20%) | Deployment (10%) | Presentation (10%)
+| Variable | Recommended Value | Notes |
+|---|---|---|
+| `NODE_ENV` | `production` | Enables production optimizations |
+| `HOST` | `0.0.0.0` | Binds to all network interfaces for container ingress |
+| `PORT` | *(Leave unset)* | Render automatically assigns and populates `PORT` |
+| `DB_PATH` | `/var/data/whiteboard.db` *(Optional)* | Custom path for SQLite database |
 
-Good luck, build something great!
+### SQLite Persistence & Storage Architecture
+
+> [!IMPORTANT]
+> **Ephemeral Filesystem on Free Tier**: Render's free Web Services run on ephemeral containers. Local disk writes (such as `./data/whiteboard.db`) persist while the container runs, but will reset upon manual redeployments or container sleep cycles.
+
+#### Durable SQLite with Render Persistent Disk (Paid Plan)
+To make your whiteboard rooms completely persistent across all restarts and redeployments:
+1. In your Render Web Service dashboard, navigate to **Disks** -> **Add Disk**.
+2. **Name**: `funboard-data`
+3. **Mount Path**: `/var/data`
+4. **Size**: `1 GB` (sufficient for tens of thousands of board drawings)
+5. Under **Environment**, add:
+   ```env
+   DB_PATH=/var/data/whiteboard.db
+   ```
+The backend automatically creates parent directories recursively if they don't exist, safely initializing `whiteboard.db` on the mounted disk.
+
+#### One-Click Render Blueprint (`render.yaml`)
+A ready-to-use Render Blueprint is included in the root directory: [`render.yaml`](render.yaml). You can link your GitHub repository directly using Render's **Blueprints** tab for automated provisioning.
+
+---
+
+## Step-by-Step Render Dashboard Guide
+
+1. Log in to [dashboard.render.com](https://dashboard.render.com/).
+2. Click **New +** and select **Web Service**.
+3. Connect your GitHub repository: `https://github.com/arpbiswas04-coder/TEAM-B-HACK-4-HALDIA-VOYAGE`.
+4. Select branch: `team-b-solution`.
+5. Fill in the service details:
+   - **Name**: `funboard-whiteboard`
+   - **Runtime**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+6. Click **Advanced** and set:
+   - **Health Check Path**: `/health`
+   - **Environment Variables**:
+     - `NODE_ENV` = `production`
+     - `HOST` = `0.0.0.0`
+7. Click **Create Web Service**.
+8. Once the build completes and status shows **Live**, copy your public URL (`https://<service-name>.onrender.com`) and open it to verify.
+
+---
+
+## Git Handoff & Submission Commands
+
+To review your changes and push the branch to your GitHub repository:
+
+```bash
+# 1. Verify you are on team-b-solution
+git status
+
+# 2. Review modified files and additions
+git diff
+
+# 3. Stage the verified files
+git add backend/ frontend/ index.html package.json render.yaml .env.example README.md .gitignore
+
+# 4. Commit with descriptive summary
+git commit -m "feat: polish neo-brutalist header, add health check, and configure render deployment"
+
+# 5. Push to GitHub
+git push origin team-b-solution
+```
+
+Open a Pull Request from `team-b-solution` into `main` with your live Render URL in the description.
+

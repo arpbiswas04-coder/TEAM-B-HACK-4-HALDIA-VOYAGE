@@ -3,94 +3,296 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Team B — Live Collaborative Whiteboard</title>
-  <meta name="description" content="Real-time multi-user collaborative whiteboard with instant stroke synchronization, SQLite persistence, presence tracking, and high-DPI canvas.">
-  <link rel="stylesheet" href="/style.css">
+  <title>FUNBOARD — Real-Time Collaborative Whiteboard</title>
+  <meta name="description" content="A bold, Neo-Brutalist real-time collaborative whiteboard for creative teams. Draw, sketch, and think together with instant stroke synchronization.">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <div id="app">
-    <!-- Compact Top Navigation Header -->
-    <header class="app-header">
-      <div class="brand">
-        <div class="brand-icon">B</div>
-        <span class="brand-title">Team B</span>
-        <span class="brand-subtitle">Live Whiteboard</span>
-      </div>
 
-      <div class="room-header-info" id="roomHeaderInfo">
-        <div class="room-badge">
-          <span>Room:</span>
-          <span class="room-id-text" id="activeRoomLabel">...</span>
-          <button class="btn-icon-xs" id="btnCopyRoomId" title="Copy Room ID">
-            📋 Copy ID
-          </button>
-          <button class="btn-icon-xs" id="btnCopyRoomLink" title="Copy Share Link">
-            🔗 Share Link
-          </button>
+  <!-- ========================================================================
+       SCREEN 1: HOMEPAGE (NEO-BRUTALISM)
+       ======================================================================== -->
+  <div id="homeView">
+    <!-- Homepage Header -->
+    <header class="home-header">
+      <a href="/" class="brand-wrapper">
+        <div class="brand-icon-box">✏️</div>
+        <span class="brand-name">FUNBOARD</span>
+        <span class="brand-tag">Collaborative Whiteboard</span>
+      </a>
+      <div class="badge-brutal" style="background-color: var(--mint-green);">
+        ⚡ Hack4Haldia'26 · Team B
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="hero-section">
+      <!-- Left Column: Typography & Room Actions -->
+      <div class="hero-left">
+        <div class="badge-brutal hero-eyebrow">
+          A LITTLE SPACE. A BIG IDEA.
+        </div>
+
+        <h1 class="hero-title">
+          Big ideas start with a <span class="highlight-accent">bold stroke.</span>
+        </h1>
+
+        <p class="hero-description">
+          Brainstorm, sketch, diagram and collaborate with your team in real time.
+          No sign-ups, no friction — just pure creative velocity on a shared canvas.
+        </p>
+
+        <!-- Room Action Card -->
+        <div class="room-action-card">
+          <!-- Create Room -->
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <input type="text" id="homeCreateName" class="input-brutal" placeholder="Room Name (e.g. Sprint Brainstorm)" maxlength="50">
+            <button id="btnHomeCreate" class="btn-brutal btn-primary" style="font-size: 15px; padding: 12px 20px;">
+              ✨ Create New Room
+            </button>
+          </div>
+
+          <!-- Divider -->
+          <div class="card-divider">
+            <span>OR JOIN AN EXISTING ROOM</span>
+          </div>
+
+          <!-- Join Room -->
+          <div class="action-row">
+            <input type="text" id="homeJoinInput" class="input-brutal input-mono" placeholder="Enter Room ID (e.g. room-7f2a8c)" autocomplete="off">
+            <button id="btnHomeJoin" class="btn-brutal btn-yellow">
+              Join Room →
+            </button>
+          </div>
+
+          <div class="sub-note">
+            ⚡ No sign-up required. Just a little room to think.
+          </div>
         </div>
       </div>
 
-      <div class="header-actions">
-        <div class="status-indicator" id="connectionStatus" title="Socket.IO connection status">
-          <span class="status-dot connecting" id="statusDot"></span>
-          <span id="statusText">Connecting...</span>
+      <!-- Right Column: Neo-Brutalist Illustration -->
+      <div class="hero-illustration-wrapper">
+        <div class="board-mockup">
+          <div class="mock-tape"></div>
+
+          <!-- Decorative Sticky Notes -->
+          <div class="sticky-note sticky-1">
+            🚀 Launch Day:<br>Ship the live canvas fast!
+          </div>
+
+          <div class="sticky-note sticky-2">
+            💡 Idea:<br>Real-time multi-user strokes via WebSockets!
+          </div>
+
+          <div class="sticky-note sticky-3">
+            🎨 Neo-Brutalism:<br>Bold borders & hard shadows!
+          </div>
+
+          <!-- Decorative SVG doodle layer -->
+          <svg class="mock-doodle-svg" viewBox="0 0 440 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Curved hand-drawn arrow from note 1 to note 2 -->
+            <path d="M 170 90 Q 240 100 270 145" stroke="#202020" stroke-width="3" stroke-dasharray="6 4" stroke-linecap="round" fill="none"/>
+            <polygon points="266 148, 276 148, 273 138" fill="#202020"/>
+            <!-- Cute sketched star -->
+            <polygon points="340,50 346,65 362,65 349,74 354,89 340,79 326,89 331,74 318,65 334,65" fill="#FFE66D" stroke="#202020" stroke-width="2.5"/>
+            <!-- Circle around an idea -->
+            <ellipse cx="120" cy="230" rx="45" ry="32" stroke="#4568F5" stroke-width="3" stroke-linecap="round" fill="rgba(69, 104, 245, 0.08)"/>
+          </svg>
+
+          <!-- Mock Collaborative Cursors -->
+          <div class="mock-cursor" style="top: 260px; left: 160px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#10B981" stroke="#202020" stroke-width="2">
+              <polygon points="0 0, 0 18, 5 13, 11 22, 14 20, 8 12, 16 12" />
+            </svg>
+            <span class="mock-cursor-tag" style="background-color: #10B981; color: #202020;">Alice (drawing)</span>
+          </div>
+
+          <div class="mock-cursor" style="top: 100px; right: 50px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#4568F5" stroke="#202020" stroke-width="2">
+              <polygon points="0 0, 0 18, 5 13, 11 22, 14 20, 8 12, 16 12" />
+            </svg>
+            <span class="mock-cursor-tag" style="background-color: #4568F5; color: #FFFFFF;">Bob</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Feature Strip -->
+    <section class="feature-strip">
+      <div class="feature-card">
+        <span class="feature-badge" style="background-color: var(--bright-yellow);">01 / TOOLS</span>
+        <h3 class="feature-title">Draw Freely</h3>
+        <p class="feature-desc">Pens, markers, translucent highlighters, geometric shapes, dashed strokes, and interactive inline text.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-badge" style="background-color: var(--mint-green);">02 / SHARING</span>
+        <h3 class="feature-title">Share Ideas</h3>
+        <p class="feature-desc">1-click invite link, instant room sync across all teammates, and crystal-clear PNG board export.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="feature-badge" style="background-color: var(--coral-red); color: #fff;">03 / SYNC</span>
+        <h3 class="feature-title">Make it Together</h3>
+        <p class="feature-desc">Real-time collaborative stroke streaming, per-user undo/redo, and persistent SQLite storage.</p>
+      </div>
+    </section>
+
+    <!-- Home Footer -->
+    <footer class="home-footer">
+      FUNBOARD · Hack4Haldia'26 Challenge · Real-Time Collaborative Whiteboard
+    </footer>
+  </div>
+
+  <!-- ========================================================================
+       SCREEN 2: WHITEBOARD WORKSPACE (NEO-BRUTALISM)
+       ======================================================================== -->
+  <div id="whiteboardView" style="display: none;">
+    <!-- Compact Neo-Brutalist Top Bar -->
+    <header class="wb-header">
+      <!-- Left Section: Navigation, Branding, Room Cluster -->
+      <div class="wb-header-left">
+        <!-- Arrow-only back button with clear tooltip & accessible label -->
+        <button id="btnLeaveToHome" class="wb-back-btn" title="Back to home" aria-label="Back to home">
+          <svg class="wb-back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+
+        <!-- Product Branding -->
+        <div class="wb-brand-box">
+          <div class="brand-icon-box wb-brand-icon">✏️</div>
+          <span class="wb-brand-name">FUNBOARD</span>
         </div>
 
-        <button class="presence-btn" id="btnPresenceToggle" title="View participants in this room">
-          <span>👥</span>
-          <span id="participantCount">1 online</span>
+        <!-- Room Metadata & Sharing Controls -->
+        <div class="wb-room-cluster">
+          <div class="wb-room-pill" title="Current room">
+            <span class="wb-room-tag">ROOM</span>
+            <span id="wbRoomId" class="room-id-mono" title="Room ID">...</span>
+          </div>
+
+          <div class="wb-room-btn-group">
+            <button id="btnCopyRoomId" class="wb-mini-btn" title="Copy Room ID" aria-label="Copy Room ID">
+              <span class="btn-icon">📋</span>
+              <span class="btn-label">Copy ID</span>
+            </button>
+            <button id="btnCopyRoomLink" class="wb-mini-btn wb-mini-btn-accent" title="Copy Shareable Link" aria-label="Copy Shareable Link">
+              <span class="btn-icon">🔗</span>
+              <span class="btn-label">Share Link</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Section: Consolidated Action Toolbar -->
+      <div class="wb-header-right">
+        <!-- Live Connection Status Badge -->
+        <div class="wb-status-badge" id="wbStatusBadge" title="Socket.IO connection status">
+          <span id="wbStatusDot" class="wb-status-dot connecting"></span>
+          <span id="wbStatusText" class="wb-status-text">Connecting...</span>
+        </div>
+
+        <!-- Collaborators Toggle Button -->
+        <button id="btnPresenceToggle" class="wb-header-btn wb-btn-mint" title="View room participants" aria-label="View room participants">
+          <span class="btn-icon">👥</span>
+          <span id="participantCount" class="btn-label">1 online</span>
         </button>
 
-        <button class="btn btn-secondary" id="btnOpenJoinModal" title="Switch or join another room">
-          Join Room
+        <div class="wb-header-divider"></div>
+
+        <!-- Export PNG -->
+        <button id="btnExportPng" class="wb-header-btn wb-btn-white" title="Download whiteboard as PNG image" aria-label="Download whiteboard as PNG">
+          <span class="btn-icon">📥</span>
+          <span class="btn-label">Export PNG</span>
         </button>
-        <button class="btn btn-primary" id="btnOpenCreateModal" title="Create a new room">
-          + New Room
+
+        <!-- Clear Board -->
+        <button id="btnClearBoard" class="wb-header-btn wb-btn-coral" title="Clear entire whiteboard" aria-label="Clear entire whiteboard">
+          <span class="btn-icon">🗑️</span>
+          <span class="btn-label">Clear</span>
         </button>
       </div>
     </header>
 
     <!-- Main Workspace with Layered Canvases -->
-    <main class="workspace" id="workspace">
+    <main class="wb-workspace" id="wbWorkspace">
       <!-- Authoritative committed strokes canvas -->
       <canvas id="mainCanvas" class="canvas-layer"></canvas>
-      <!-- Ephemeral live drawing preview canvas (in-progress local & remote strokes) -->
+      <!-- Ephemeral live preview canvas (in-progress local & remote drawing) -->
       <canvas id="previewCanvas" class="canvas-layer"></canvas>
       <!-- Remote cursors overlay -->
       <div id="cursorOverlay"></div>
 
-      <!-- Floating Bottom Toolbar -->
-      <div class="floating-toolbar" id="toolbar" role="toolbar" aria-label="Drawing Tools">
-        <!-- Drawing Tools -->
-        <div class="tool-group">
-          <button class="tool-btn active" id="toolPen" title="Pen Tool (P)" data-tool="pen">
-            ✏️
-          </button>
-          <button class="tool-btn" id="toolEraser" title="Eraser Tool (E)" data-tool="eraser">
-            🧹
-          </button>
+      <!-- Tasteful Empty State Banner -->
+      <div id="emptyBoardBanner" class="empty-board-banner">
+        <span>✏️</span> The board is yours. Pick a tool below and start creating!
+      </div>
+
+      <!-- Inline Canvas Text Placement Input -->
+      <input type="text" id="inlineTextInput" class="canvas-inline-text-input" placeholder="Type text & hit Enter" style="display: none;">
+
+      <!-- Floating Neo-Brutalist Toolbar -->
+      <div class="wb-toolbar" id="wbToolbar" role="toolbar" aria-label="Whiteboard Drawing Tools">
+        <!-- Drawing & Brush Tools -->
+        <div class="tb-group">
+          <button class="tb-btn active" id="toolPen" title="Freehand Pen (P)" data-tool="pen">✏️</button>
+          <button class="tb-btn" id="toolMarker" title="Solid Marker" data-tool="marker">🖍️</button>
+          <button class="tb-btn" id="toolHighlighter" title="Translucent Highlighter" data-tool="highlighter">🪄</button>
+          <button class="tb-btn" id="toolDashed" title="Dashed Pen" data-tool="dashed">✂️</button>
+          <button class="tb-btn" id="toolEraser" title="Eraser Tool (E)" data-tool="eraser">🧹</button>
         </div>
 
-        <div class="divider"></div>
+        <div class="tb-divider"></div>
+
+        <!-- Geometric Shapes -->
+        <div class="tb-group">
+          <button class="tb-btn" id="toolRect" title="Rectangle (R)" data-tool="rect">⬜</button>
+          <button class="tb-btn" id="toolCircle" title="Circle / Ellipse (C)" data-tool="circle">⭕</button>
+          <button class="tb-btn" id="toolLine" title="Straight Line (L)" data-tool="line">📏</button>
+          <button class="tb-btn" id="toolArrow" title="Arrow (A)" data-tool="arrow">➡️</button>
+        </div>
+
+        <div class="tb-divider"></div>
+
+        <!-- Text Tool -->
+        <div class="tb-group">
+          <button class="tb-btn" id="toolText" title="Place Text (T)" data-tool="text">🔤</button>
+        </div>
+
+        <div class="tb-divider"></div>
 
         <!-- Color Palette -->
-        <div class="color-picker-container" id="paletteContainer">
-          <button class="color-swatch active" data-color="#f8fafc" style="background-color: #f8fafc;" title="White"></button>
-          <button class="color-swatch" data-color="#38bdf8" style="background-color: #38bdf8;" title="Sky Blue"></button>
-          <button class="color-swatch" data-color="#10b981" style="background-color: #10b981;" title="Emerald"></button>
-          <button class="color-swatch" data-color="#f59e0b" style="background-color: #f59e0b;" title="Amber"></button>
-          <button class="color-swatch" data-color="#f43f5e" style="background-color: #f43f5e;" title="Coral Red"></button>
-          <button class="color-swatch" data-color="#a855f7" style="background-color: #a855f7;" title="Purple"></button>
-          <label class="custom-color-btn" title="Custom Color Picker">
-            <input type="color" id="customColorInput" value="#f8fafc">
+        <div class="tb-palette" id="paletteContainer">
+          <button class="swatch-btn active" data-color="#202020" style="background-color: #202020;" title="Ink Black"></button>
+          <button class="swatch-btn" data-color="#4568F5" style="background-color: #4568F5;" title="Cobalt Blue"></button>
+          <button class="swatch-btn" data-color="#FF7A68" style="background-color: #FF7A68;" title="Coral Red"></button>
+          <button class="swatch-btn" data-color="#10B981" style="background-color: #10B981;" title="Mint Green"></button>
+          <button class="swatch-btn" data-color="#F59E0B" style="background-color: #F59E0B;" title="Amber Yellow"></button>
+          <button class="swatch-btn" data-color="#8B5CF6" style="background-color: #8B5CF6;" title="Purple"></button>
+          <button class="swatch-btn" data-color="#FFFFFF" style="background-color: #FFFFFF;" title="White"></button>
+          <label class="custom-color-picker-label" title="Custom Color">
+            <input type="color" id="customColorInput" value="#202020">
             🎨
           </label>
         </div>
 
-        <div class="divider"></div>
+        <div class="tb-divider"></div>
+
+        <!-- Fill Mode Toggle -->
+        <div class="tb-group">
+          <button class="tb-fill-btn" id="btnToggleFill" title="Toggle Shape Fill (No Fill / Solid Fill)">
+            <span id="fillIcon">🚫</span>
+            <span id="fillText">No Fill</span>
+          </button>
+        </div>
+
+        <div class="tb-divider"></div>
 
         <!-- Brush Sizes -->
-        <div class="brush-sizes" id="brushSizesContainer">
+        <div class="tb-sizes" id="sizesContainer">
           <button class="size-btn" data-size="2" title="Fine (2px)">
             <span class="size-dot" style="width: 4px; height: 4px;"></span>
           </button>
@@ -105,95 +307,45 @@
           </button>
         </div>
 
-        <div class="divider"></div>
+        <div class="tb-divider"></div>
 
         <!-- History Actions -->
-        <div class="tool-group">
-          <button class="tool-btn" id="btnUndo" title="Undo (Ctrl+Z)">
-            ↩️
-          </button>
-          <button class="tool-btn" id="btnRedo" title="Redo (Ctrl+Y)">
-            ↪️
-          </button>
-        </div>
-
-        <div class="divider"></div>
-
-        <!-- Actions -->
-        <div class="tool-group">
-          <button class="tool-btn" id="btnExport" title="Export board as PNG">
-            📥
-          </button>
-          <button class="tool-btn" id="btnClearBoard" title="Clear whiteboard (confirmation required)" style="color: var(--danger);">
-            🗑️
-          </button>
+        <div class="tb-group">
+          <button class="tb-btn" id="btnUndo" title="Undo (Ctrl+Z)">↩️</button>
+          <button class="tb-btn" id="btnRedo" title="Redo (Ctrl+Y)">↪️</button>
         </div>
       </div>
     </main>
 
     <!-- Presence Popover Drawer -->
-    <div class="presence-popover" id="presencePopover">
-      <div class="popover-title">Room Participants</div>
+    <div class="presence-drawer" id="presenceDrawer">
+      <div class="presence-title">Active Collaborators</div>
       <div id="participantsList">
-        <!-- Dynamically populated -->
-      </div>
-    </div>
-
-    <!-- Create Room Modal -->
-    <div class="modal-overlay" id="modalCreateRoom">
-      <div class="modal-box">
-        <h3 class="modal-title">Create Collaborative Room</h3>
-        <p class="modal-desc">Create a new live room. A unique room ID will be generated, or you can specify a custom one.</p>
-        <div class="form-group">
-          <label class="form-label" for="createRoomName">Whiteboard Name</label>
-          <input type="text" id="createRoomName" class="form-input" placeholder="e.g. Brainstorming Session" maxlength="60">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="createCustomId">Custom Room ID (Optional)</label>
-          <input type="text" id="createCustomId" class="form-input" placeholder="e.g. my-team-room" maxlength="32">
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-secondary" id="btnCancelCreate">Cancel</button>
-          <button class="btn btn-primary" id="btnConfirmCreate">Create Room</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Join Room Modal -->
-    <div class="modal-overlay" id="modalJoinRoom">
-      <div class="modal-box">
-        <h3 class="modal-title">Join Existing Room</h3>
-        <p class="modal-desc">Enter the room ID to join your team's live whiteboard.</p>
-        <div class="form-group">
-          <label class="form-label" for="joinRoomInput">Room ID</label>
-          <input type="text" id="joinRoomInput" class="form-input" placeholder="e.g. room-7f2a8c" autocomplete="off">
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-secondary" id="btnCancelJoin">Cancel</button>
-          <button class="btn btn-primary" id="btnConfirmJoin">Join Room</button>
-        </div>
+        <!-- Dynamically rendered -->
       </div>
     </div>
 
     <!-- Clear Board Confirmation Modal -->
     <div class="modal-overlay" id="modalClearBoard">
-      <div class="modal-box">
-        <h3 class="modal-title" style="color: var(--danger);">Clear Entire Board?</h3>
-        <p class="modal-desc">This action will erase all drawings on this whiteboard for everyone in the room. This change is saved on the server.</p>
-        <div class="modal-actions">
-          <button class="btn btn-secondary" id="btnCancelClear">Cancel</button>
-          <button class="btn btn-danger" id="btnConfirmClear">Yes, Clear Board</button>
+      <div class="modal-card">
+        <h3 class="modal-head" style="color: var(--coral-red);">⚠️ Clear Entire Whiteboard?</h3>
+        <p class="modal-body-text">
+          This will permanently erase all drawings and shapes on this whiteboard for every participant in this room.
+        </p>
+        <div class="modal-footer">
+          <button class="btn-brutal btn-sm" id="btnCancelClear">Cancel</button>
+          <button class="btn-brutal btn-sm btn-coral" id="btnConfirmClear">Yes, Clear Everything</button>
         </div>
       </div>
     </div>
-
-    <!-- Toast Notifications Container -->
-    <div class="toast-container" id="toastContainer"></div>
   </div>
 
-  <!-- Socket.IO client served directly by server -->
+  <!-- Toast Notification Shelf -->
+  <div class="toast-shelf" id="toastShelf"></div>
+
+  <!-- Real-Time Socket.IO Client -->
   <script src="/socket.io/socket.io.js"></script>
-  <!-- Main Client Application -->
-  <script src="/client.js"></script>
+  <!-- FUNBOARD Client Engine -->
+  <script src="/js/client.js"></script>
 </body>
 </html>
